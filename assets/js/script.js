@@ -188,9 +188,12 @@ for (let i = 0; i < navigationLinks.length; i++) {
 // custom select variables
 // Namespace for script2
 const script2 = (() => {
+  // Select the dropdown toggle and items
   const projectSelect = document.querySelector("[project-select]");
   const projectSelectItems = document.querySelectorAll("[project-select-item]");
   const projectSelectValue = document.querySelector("[project-select-value]");
+
+  // Select filter buttons and items to filter
   const projectFilterBtn = document.querySelectorAll("[project-filter-btn]");
   const projectFilterItems = document.querySelectorAll("[project-filter-item]");
 
@@ -200,55 +203,62 @@ const script2 = (() => {
       dropdown.classList.remove("active");
       const selectList = dropdown.nextElementSibling;
       if (selectList) {
-        selectList.style.display = "none";
+        selectList.style.display = "none"; // Ensure all dropdown lists are hidden
       }
     });
   };
 
+  // Toggle dropdown visibility
   const elementToggleFunc = (element) => {
-    closeAllDropdowns(); // Close all dropdowns first
-    element.classList.toggle("active");
+    closeAllDropdowns(); // Close all other dropdowns first
+    element.classList.toggle("active"); // Toggle active class on clicked dropdown
     const selectList = element.nextElementSibling;
     if (selectList) {
+      // Toggle the dropdown list visibility
       selectList.style.display = selectList.style.display === "block" ? "none" : "block";
     }
   };
 
+  // Add click event to the dropdown toggle button
   projectSelect.addEventListener("click", function () {
-    elementToggleFunc(this);
+    elementToggleFunc(this); // Toggle the dropdown on click
   });
 
+  // Handle selection of dropdown buttons inside the dropdown
   projectSelectItems.forEach(item => {
     item.addEventListener("click", function () {
-      const selectedValue = this.innerText.toLowerCase();
-      projectSelectValue.innerText = this.innerText;
-      elementToggleFunc(projectSelect);
-      projectFilterFunc(selectedValue);
+      const selectedValue = this.innerText.toLowerCase(); // Get selected category from button text
+      projectSelectValue.innerText = this.innerText; // Set dropdown button text to selected value
+      elementToggleFunc(projectSelect); // Close the dropdown after selection
+      projectFilterFunc(selectedValue); // Filter the items based on selected category
     });
   });
 
+  // Function to filter project items
   const projectFilterFunc = (selectedValue) => {
     projectFilterItems.forEach(item => {
+      // Check if selectedValue is "all" or matches the item's category
       if (selectedValue === "all") {
-        item.classList.add("active");
+        item.classList.add("active"); // Show all items
       } else if (selectedValue === item.dataset.category) {
-        item.classList.add("active");
+        item.classList.add("active"); // Show items matching selected category
       } else {
-        item.classList.remove("active");
+        item.classList.remove("active"); // Hide non-matching items
       }
     });
   };
 
-  let lastTouchedButton = projectFilterBtn[0];
+  // Handle filter button clicks (e.g., "All", "Web Design", etc.)
+  let lastTouchedButton = projectFilterBtn[0]; // Keep track of the last clicked button
   projectFilterBtn.forEach(btn => {
     btn.addEventListener("click", function () {
-      const selectedValue = this.innerText.toLowerCase();
-      projectSelectValue.innerText = this.innerText;
-      projectFilterFunc(selectedValue);
+      const selectedValue = this.innerText.toLowerCase(); // Get the selected category
+      projectSelectValue.innerText = this.innerText; // Update dropdown button text
+      projectFilterFunc(selectedValue); // Filter items based on button click
 
-      lastTouchedButton.classList.remove("active");
-      this.classList.add("active");
-      lastTouchedButton = this;
+      lastTouchedButton.classList.remove("active"); // Remove active class from previous button
+      this.classList.add("active"); // Add active class to clicked button
+      lastTouchedButton = this; // Update the last touched button
     });
   });
 
