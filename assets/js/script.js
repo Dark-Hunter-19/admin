@@ -56,62 +56,85 @@ overlay.addEventListener("click", testimonialsModalFunc);
 
 //mark
 // custom select variables
-const select = document.querySelector("[data-select]");
-const selectItems = document.querySelectorAll("[data-select-item]");
-const selectValue = document.querySelector("[data-selecct-value]");
-const filterBtn = document.querySelectorAll("[data-filter-btn]");
+(function() {
+  // Function to toggle visibility of the select dropdown
+  const toggleDropdown = () => {
+    const selectButton = document.querySelector("[data-select]");
+    const selectList = document.getElementById('select-list');
 
-select.addEventListener("click", function () { elementToggleFunc(this); });
-
-// add event in all select items
-for (let i = 0; i < selectItems.length; i++) {
-  selectItems[i].addEventListener("click", function () {
-
-    let selectedValue = this.innerText.toLowerCase();
-    selectValue.innerText = this.innerText;
-    elementToggleFunc(select);
-    filterFunc(selectedValue);
-
-  });
-}
-
-// filter variables
-const filterItems = document.querySelectorAll("[data-filter-item]");
-
-const filterFunc = function (selectedValue) {
-
-  for (let i = 0; i < filterItems.length; i++) {
-
-    if (selectedValue === "all") {
-      filterItems[i].classList.add("active");
-    } else if (selectedValue === filterItems[i].dataset.category) {
-      filterItems[i].classList.add("active");
+    if (selectButton.classList.contains('active')) {
+      selectButton.classList.remove('active');
+      selectList.style.display = 'none';
     } else {
-      filterItems[i].classList.remove("active");
+      selectButton.classList.add('active');
+      selectList.style.display = 'block';
     }
+  };
 
-  }
+  // Function to hide the dropdown
+  const hideDropdown = () => {
+    const selectButton = document.querySelector("[data-select]");
+    const selectList = document.getElementById('select-list');
+    selectButton.classList.remove('active');
+    selectList.style.display = 'none';
+  };
 
-}
+  // Function to filter project items based on category
+  const filterProjects = (category) => {
+    const projectItems = document.querySelectorAll('.project-item');
+    projectItems.forEach(item => {
+      if (category === "all" || item.getAttribute('data-category') === category) {
+        item.style.display = "block";
+      } else {
+        item.style.display = "none";
+      }
+    });
+    hideDropdown();  // Hide dropdown after selection
+  };
 
-// add event in all filter button items for large screen
-let lastClickedBtn = filterBtn[0];
+  // Initialize event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    const selectButton = document.querySelector("[data-select]");
+    const selectItems = document.querySelectorAll("[data-select-item]");
+    const selectValue = document.querySelector("[data-select-value]");
+    const filterButtons = document.querySelectorAll("[data-filter-btn]");
 
-for (let i = 0; i < filterBtn.length; i++) {
+    // Handle select dropdown click
+    selectButton.addEventListener("click", (e) => {
+      e.stopPropagation();  // Prevent event bubbling to the document
+      toggleDropdown();
+    });
 
-  filterBtn[i].addEventListener("click", function () {
+    // Handle clicks outside the dropdown to close it
+    document.addEventListener('click', () => {
+      hideDropdown();
+    });
 
-    let selectedValue = this.innerText.toLowerCase();
-    selectValue.innerText = this.innerText;
-    filterFunc(selectedValue);
+    // Handle select items click
+    selectItems.forEach(item => {
+      item.addEventListener("click", (e) => {
+        e.stopPropagation();  // Prevent event bubbling to the document
+        const selectedValue = item.getAttribute('data-select-item');
+        selectValue.innerText = item.innerText;
+        filterProjects(selectedValue);
+      });
+    });
 
-    lastClickedBtn.classList.remove("active");
-    this.classList.add("active");
-    lastClickedBtn = this;
+    // Handle filter button click
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const selectedValue = button.getAttribute('data-filter-btn');
+        selectValue.innerText = button.innerText;
+        filterProjects(selectedValue);
 
+        // Update active button
+        filterButtons.forEach(btn => btn.classList.remove("active"));
+        button.classList.add("active");
+      });
+    });
   });
+})();
 
-}
 
 
 
